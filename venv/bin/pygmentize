@@ -1,4 +1,4 @@
-#!/home/daniel/Desktop/Web-Template/venv/bin/python3
+#!/home/daniel/Desktop/Flask-Dev/venv/bin/python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'Pygments==1.6','console_scripts','pygmentize'
 __requires__ = 'Pygments==1.6'
 import re
