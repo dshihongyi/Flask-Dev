@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <!-- <style type="text/css">
+    .mainsection {white-space: wrap;}
+    .box {
+        min-height: 1000px;
+        border: 1px solid #a0b3d6;
+        width: 1300px;
+        font-size: 14px;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: wrap;
+    }
+  </style> -->
+  <h1><br>{{sw_template.ci_name}}<h1>
+  <small>- Changed by {{sw_template.last_editor}} on {{sw_template.create_date}}</small>
+  <hr>
+  <div class="mainsection">
+    <textarea id="XXX" style="font-size: 10pt" style="overflow-x:hidden; overflow-y:auto; background:transparent; border:0; width:120%" cols="135" rows="35" readonly resize: none;>
+    {{ sw_template.config | safe }}
+    </textarea>
+  </div>
+
+  <!-- <div contenteditable="true" class="box">{{sw_template.config | safe}}</div> -->
+
+{% endblock %}

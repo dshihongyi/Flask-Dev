@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+  <h1><br> Spark Template Configure <h1>
+  {% from "includes/_formhelper.html" import render_field %}
+  <form method="POST" action="">
+  <!-- <hr>
+  <p><br> test: {{ result_data }} {{ username }}</p> -->
+  <div class="mainsection">
+    
+    <textarea name="text_area" style="font-size: 10pt" style="overflow-x:hidden; overflow-y:auto; background:transparent; border:0; width:120%" cols="135" rows="35" readonly resize: none;>
+    {{ result_data }}
+    </textarea>
+  </div>
+  <p><input type="submit" class="btn btn-success" value="Copy"> </p>
+
+{% endblock %}

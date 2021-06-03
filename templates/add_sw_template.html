@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<style type="text/css">
+  .mainsection {white-space: wrap;}
+  .box {
+      min-height: 500px;
+      border: 1px solid #a0b3d6;
+      width: 1110px;
+      font-size: 14px;
+      max-height: 600px;
+      overflow-y: auto;
+      white-space: wrap;
+  }
+</style>
+
+  <h1><br>Add Switch Configure Template</h1>
+  {% from "includes/_formhelper.html" import render_field %}
+  <form method="POST" action="">
+
+    <div class="form-group">
+      <label>Supplier</label>
+      <select type="text" class="form-control" name="isp" value={{request.form.isp}}>
+        <option> </option>
+        <option>FEENIX</option>
+        <option>SPARK</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>ID</label>
+      <select type="text" class="form-control" name="ide" value={{request.form.ide}}>
+        <option>100</option>
+        <option>200</option>
+        <option>300</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <select type="text" class="form-control" name="desc" value={{request.form.desc}}>
+        <option>Switch</option>
+        <option>Router</option>
+      </select>
+    </div>
+    <div class="form-group">
+      {{render_field(form.ip, class="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.prefix, class="form-control")}}
+    </div>
+<!-- 
+    <div class="form-group">
+      {{render_field(form.config, class="box")}}
+    </div>
+    <div class="mainsection">
+      <textarea id="XXX" style="font-size: 10pt" style="overflow-x:hidden; overflow-y:auto; background:transparent; border:0; width:120%" cols="135" rows="35" readonly resize: none;>
+      {{ result | safe }}
+      </textarea>
+    </div> -->
+    <p><input type="submit" class="btn btn-success" value="Submit">  <input class="btn btn-secondary" type="reset" value="Reset"></p>
+    <!-- <p><input class="btn btn-primary" type="button" value="Input"></p> -->
+{% endblock %}

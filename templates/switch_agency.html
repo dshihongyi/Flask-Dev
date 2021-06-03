@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <h1><br>Cisco Switch</h1>
+  <div class="jumbotron">
+  <ul class="list-group">
+    {% for sw in switches %}
+      <li class="list-group-item"><a href="sw_template/{{sw.id}}">{{sw.id}}. {{sw.agency}} - {{sw.ci_name}}</a></li>
+    {% endfor %}
+  </ul>
+  </div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<style type="text/css">
+  .mainsection {white-space: wrap;}
+  .box {
+      min-height: 500px;
+      border: 1px solid #a0b3d6;
+      width: 1110px;
+      font-size: 14px;
+      max-height: 600px;
+      overflow-y: auto;
+      white-space: wrap;
+  }
+</style>
+
+  <h1><br>Edit Switch Configure Template</h1>
+  {% from "includes/_formhelper.html" import render_field %}
+  <form method="POST" action="">
+
+    <div class="form-group">
+      <label>Brand</label>
+      <select type="text" class="form-control" name="brand" value={{request.form.brand}}>
+        <option>Cisco</option>
+        <option>Arista</option>
+        <option>Juiper</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Type</label>
+      <select type="text" class="form-control" name="type" value={{request.form.type}}>
+        <option>Switch</option>
+        <option>Router</option>
+      </select>
+    </div>
+    <div class="form-group">
+      {{render_field(form.model, class="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.ios, class="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.agency, class="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.site, class="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.ci_name, class="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.config, class="box")}}
+    </div>
+    <p>
+      <input type="submit" class="btn btn-success" value="Update">
+      <!-- <input class="btn btn-secondary" type="reset" value="Reset"> -->
+      <a href="/dashboard", class="btn btn-primary">Back</a>
+    </p>
+    <!-- <p><input class="btn btn-primary" type="button" value="Input"></p> -->
+{% endblock %}
