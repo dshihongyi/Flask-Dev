@@ -172,21 +172,21 @@ def logout():
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
-    # Create Cursor
-    cur = mysql.connection.cursor()
+    # # Create Cursor
+    # cur = mysql.connection.cursor()
 
-    # Get Switch templates
-    result = cur.execute("SELECT * FROM sw_templates")
+    # # Get Switch templates
+    # result = cur.execute("SELECT * FROM sw_templates")
 
-    sw_templates = cur.fetchall()
-    if result > 0:
-        return render_template('dashboard.html',sw_templates=sw_templates)
-    else:
-        msg = "No Templates Found"
-        return render_template('dashboard.html', msg=msg)
+    # sw_templates = cur.fetchall()
+    # if result > 0:
+    #     return render_template('dashboard.html',sw_templates=sw_templates)
+    # else:
+    #     msg = "No Templates Found"
+    #     return render_template('dashboard.html', msg=msg)
 
-    # Close connection
-    cur.close()
+    # # Close connection
+    # cur.close()
 
 
 # Templates Form Class
