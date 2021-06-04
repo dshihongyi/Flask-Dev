@@ -176,7 +176,7 @@ def dashboard():
     cur = mysql.connection.cursor()
 
     # Get Switch templates
-    # result = cur.execute("SELECT * FROM sw_templates")
+    result = cur.execute("SELECT * FROM sw_templates")
 
     sw_templates = cur.fetchall()
     if result > 0:
