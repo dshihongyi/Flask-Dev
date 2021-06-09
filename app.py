@@ -6,6 +6,7 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 import sys
 import pyperclip
+from copypaste import copy, paste
 
 
 app = Flask(__name__)
@@ -32,6 +33,7 @@ def index():
 @app.route('/router')
 def router():
     return render_template('router.html')
+
 
 # Switch Templates
 @app.route('/switch')
@@ -68,8 +70,132 @@ def sw_template(id):
 
     return render_template('sw_template.html', sw_template=sw_template)
 
-# Register Form Class
-# https://flask.palletsprojects.com/en/1.1.x/patterns/wtforms/
+
+# Configuration Template Page
+@app.route('/configure_template')
+def configure_template():
+    return render_template('configure_template.html')
+
+
+# Templates Form Class
+class TemplateForm(Form):
+    # brand = StringField('Brand', [validators.Length(min=1, max=50)])
+    # type = StringField('Type', [validators.Length(min=4, max=50)])
+    # model = StringField('Model', [validators.Length(min=1, max=50)])
+    # ios = StringField('IOS', [validators.Length(min=4, max=25)])
+    # agency = StringField('Agent', [validators.Length(min=1, max=50)])
+    # site = StringField('Site Code', [validators.Length(min=2, max=5)])
+    # ci_name = StringField('CI_Name', [validators.Length(min=1, max=50)])
+    isp = StringField('Supplier', [validators.Length(min=1, max=20)])
+    ide = StringField('ID', [validators.Length(min=1, max=50)])
+    desc = StringField('Description', [validators.Length(min=1, max=50)])
+    ip = StringField('IP Address', [validators.Length(min=1, max=50)])
+    prefix = StringField('Sub-Mask', [validators.Length(min=1, max=25)])
+    config = TextAreaField('', [validators.Length(min=0)])
+
+
+# Configuration Template Page
+@app.route('/edit_feenix_template', methods=['GET','POST'])
+def edit_feenix_template():
+
+    # Create Cursor
+    cur = mysql.connection.cursor()
+
+    # Get Switch templates
+    result = cur.execute("SELECT * FROM isp_templates WHERE isp = %s", ["Feenix"])
+
+    isp_template = cur.fetchone()
+
+    # Get from
+    form = TemplateForm(request.form)
+
+    # Populate template form Fields
+    form.config.data = isp_template['config']
+
+    if request.method == 'POST':
+        
+        config = request.form['config']
+
+        # Create Cursor
+        cur = mysql.connection.cursor()
+
+        if session['username'] == 'admin':
+
+            # Execute
+            cur.execute("UPDATE isp_templates SET config=%s, last_editor=%s WHERE isp = %s", (config, session['username'], ["Feenix"]))
+
+            # Commit to # DEBUG:
+            mysql.connection.commit()
+
+            # Close connection
+            cur.close()
+
+            flash('Feenix Template Updated','success')
+
+            return redirect(url_for('dashboard'))
+        
+        else:
+            flash('Unauthorized, Please login "Admin" User For Update Template', 'danger')
+            return redirect(url_for('login'))
+
+    return render_template('edit_feenix_template.html', isp_template=isp_template, form=form)
+
+
+# Configuration Template Page
+@app.route('/edit_spark_template', methods=['GET','POST'])
+def edit_spark_template():
+
+    # Create Cursor
+    cur = mysql.connection.cursor()
+
+    # Get Switch templates
+    result = cur.execute("SELECT * FROM isp_templates WHERE isp = %s", ["Spark"])
+
+    isp_template = cur.fetchone()
+
+    # Get from
+    form = TemplateForm(request.form)
+
+    # Populate template form Fields
+    form.config.data = isp_template['config']
+
+    if request.method == 'POST':
+        
+        config = request.form['config']
+
+        # Create Cursor
+        cur = mysql.connection.cursor()
+
+        if session['username'] == 'admin':
+
+            # Execute
+            cur.execute("UPDATE isp_templates SET config=%s, last_editor=%s WHERE isp = %s", (config, session['username'], ["Spark"]))
+
+            # Commit to # DEBUG:
+            mysql.connection.commit()
+
+            # Close connection
+            cur.close()
+
+            flash('Spark Template Updated','success')
+
+            return redirect(url_for('dashboard'))
+        
+        else:
+            flash('Unauthorized, Please login "Admin" User For Update Template', 'danger')
+            return redirect(url_for('login'))
+
+    return render_template('edit_spark_template.html', isp_template=isp_template, form=form)
+
+
+
+
+
+
+
+
+#### Register Form Class ####
+#### https://flask.palletsprojects.com/en/1.1.x/patterns/wtforms/
 class RegisterForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)])
     username = StringField('Username', [validators.Length(min=4, max=25)])
@@ -189,26 +315,12 @@ def dashboard():
     cur.close()
 
 
-# Templates Form Class
-class TemplateForm(Form):
-    # brand = StringField('Brand', [validators.Length(min=1, max=50)])
-    # type = StringField('Type', [validators.Length(min=4, max=50)])
-    # model = StringField('Model', [validators.Length(min=1, max=50)])
-    # ios = StringField('IOS', [validators.Length(min=4, max=25)])
-    # agency = StringField('Agent', [validators.Length(min=1, max=50)])
-    # site = StringField('Site Code', [validators.Length(min=2, max=5)])
-    # ci_name = StringField('CI_Name', [validators.Length(min=1, max=50)])
-    isp = StringField('Supplier', [validators.Length(min=1, max=20)])
-    ide = StringField('ID', [validators.Length(min=1, max=50)])
-    desc = StringField('Description', [validators.Length(min=1, max=50)])
-    ip = StringField('IP Address', [validators.Length(min=1, max=50)])
-    prefix = StringField('Sub-Mask', [validators.Length(min=1, max=25)])
-    config = TextAreaField('Config', [validators.Length(min=0)])
 
-# Add Switch Templates
-@app.route('/add_sw_template', methods=['GET','POST'])
+
+# Create Device Configuration Templates
+@app.route('/add_isp_template', methods=['GET','POST'])
 @is_logged_in
-def add_sw_template():
+def add_isp_template():
     form = TemplateForm(request.form)
         
     if request.method == 'POST' and form.validate() and form.isp.data == 'FEENIX':
@@ -220,26 +332,62 @@ def add_sw_template():
         # agency = form.agency.data
         # site = form.site.data
         # ci_name = form.ci_name.data
-        Feenix_Template = open("/home/daniel/Desktop/Web-Template/ISP_Template/Feenix.txt").read()
 
-        ide = form.ide.data
-        desc = form.desc.data
-        ip = form.ip.data
-        prefix = form.prefix.data
-        configs = form.config.data
+        # Create Cursor
+        cur = mysql.connection.cursor()
 
-        Parsed_Feenix_Template = Feenix_Template.format(ide = ide, desc = desc, ip = ip, prefix = prefix)
+        # Get user by id
+        result = cur.execute("SELECT * FROM isp_templates WHERE isp = %s", ["Feenix"])
+
+        if result > 0:
+
+            # Fetch the Template data
+            template = cur.fetchone()
+            Feenix_Template = template['config']
+            # Feenix_Template = open("/home/daniel/Desktop/Web-Template/ISP_Template/Feenix.txt").read()
+
+
+            # Modify the Value in Template
+            ide = form.ide.data
+            desc = form.desc.data
+            ip = form.ip.data
+            prefix = form.prefix.data
+            configs = form.config.data
+
+            Parsed_Feenix_Template = Feenix_Template.format(ide = ide, desc = desc, ip = ip, prefix = prefix)
         
-       
-        # return 'Successfully load value'
-        flash('Template Created','success')
+            # # Commit to # DEBUG:
+            # mysql.connection.commit()
 
-        return redirect(url_for('Feenix_template', result_data=Parsed_Feenix_Template))
-        # return render_template('add_sw_template.html', result=form.config.data)
+            # # Close connection
+            # cur.close()
+
+            # return 'Successfully load value'
+            flash('Template Created','success')
+
+            return redirect(url_for('Create_feenix_template', result_data=Parsed_Feenix_Template))
+            # return render_template('add_isp_template.html', result=form.config.data)
+
+        else:
+            # app.logger.info('PASSWORD NOT MATCHED')
+            error = 'NO DEFAULT TEMPLATE > Navigate to Configure-Template Create New One'
+            return render_template('dashboard.html', error=error)
+            # Close Connection
+            cur.close()
+            
 
     elif request.method == 'POST' and form.validate() and form.isp.data == 'SPARK':
 
-        Spark_Template = open("/home/daniel/Desktop/Web-Template/ISP_Template/Spark.txt").read()
+         # Create Cursor
+        cur = mysql.connection.cursor()
+
+        # Get user by id
+        result = cur.execute("SELECT * FROM isp_templates WHERE isp = %s", ["Spark"])
+
+        # Fetch the Template data
+        template = cur.fetchone()
+        Spark_Template = template['config']
+        # Spark_Template = open("/home/daniel/Desktop/Web-Template/ISP_Template/Spark.txt").read()
 
         ide = form.ide.data
         desc = form.desc.data
@@ -249,11 +397,16 @@ def add_sw_template():
 
         Parsed_Spark_Template = Spark_Template.format(ide = ide, desc = desc, ip = ip, prefix = prefix)
         
+        # Commit to # DEBUG:
+        mysql.connection.commit()
+
+        # Close connection
+        cur.close()
        
         # return 'Successfully load value'
         flash('Template Created','success')
 
-        return redirect(url_for('Spark_template', result_data=Parsed_Spark_Template))
+        return redirect(url_for('Create_spark_template', result_data=Parsed_Spark_Template))
         # return render_template('add_sw_template.html', result=form.config.data)
 
 
@@ -274,28 +427,33 @@ def add_sw_template():
 
         # return redirect(url_for('dashboard'))
 
-    return render_template('add_sw_template.html', form=form)
+    return render_template('add_isp_template.html', form=form)
 
-@app.route('/Feenix_template', methods=['POST', 'GET'])
-def Feenix_template():
+@app.route('/Create_feenix_template', methods=['POST', 'GET'])
+def Create_feenix_template():
+    result_data = request.args.get('result_data', None)
+
+    if request.method == 'POST':
+        print(request.form["text_area"])
+        copy(request.form["text_area"])
+
+    return render_template('create_feenix_template.html', result_data=result_data)
+
+
+@app.route('/Create_spark_template', methods=['POST', 'GET'])
+def Create_spark_template():
     result_data = request.args.get('result_data', None)
 
     if request.method == 'POST':
         print(request.form["text_area"])
         pyperclip.copy(request.form["text_area"])
 
-    return render_template('Feenix_template.html', result_data=result_data)
+    return render_template('create_spark_template.html', result_data=result_data)
 
 
-@app.route('/Spark_template', methods=['POST', 'GET'])
-def Spark_template():
-    result_data = request.args.get('result_data', None)
 
-    if request.method == 'POST':
-        print(request.form["text_area"])
-        pyperclip.copy(request.form["text_area"])
 
-    return render_template('Spark_template.html', result_data=result_data)
+
 
 
 # Edit Switch Templates

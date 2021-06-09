@@ -1,0 +1,40 @@
+{% extends 'layout.html'%}
+
+{% block body %}
+
+<style>
+  .container {
+    height: 200px;
+    position: relative;
+  }
+  
+  .center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+  </style>
+
+  <div class="jumbotron">
+    <h1> Configure: <small>Welcome <span style="color:rgb(243, 149, 9);">{{session.username}}</span></small></h1>
+    <p><br>Managing your Configuration Template, Please select one of the supplier from the option showing below</p>
+    <p>The changes that you made to the device template are saved and you are returned to the Device Templates page. After you modify a device template and use that device template to add a site, the modified parameters are used in the site addition workflow.
+       The device template modifications do not take effect on existing sites.</p>
+    <p>You can create default template with variable content simply using the Jinja2 '{{ VARIABLE_NAME }}' syntax. </p>
+  </div>
+  
+  <div class="container">
+    <div class="center">
+      <td><a type="button" class="btn btn-primary btn-lg" href="/edit_feenix_template">Feenix Template</a></td>
+      <td><a type="button" class="btn btn-secondary btn-lg" href="/edit_spark_template" >Spark Template</a></td>
+    </div>
+  </div>
+ 
+  <hr>
+
+ 
+{% endblock %}
+    

@@ -1,0 +1,14 @@
+#!/home/daniel/Desktop/Flask-Dev/venv/bin/python3
+
+import argparse
+import sys
+
+from copypaste import paste
+
+
+parser = argparse.ArgumentParser(
+    description='Returns system clipboard contents'
+)
+argumets = parser.parse_args(sys.argv[1:])
+
+sys.stdout.write(paste())

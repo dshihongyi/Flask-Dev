@@ -1,15 +1,15 @@
 {% extends 'layout.html'%}
 
 {% block body %}
-  <h1><br>Dashboard <small>Welcome {{session.username}}</small></h1>
+  <h1><br>Dashboard: <small>Welcome {{session.username}}</small></h1>
   <br>
   <br>
-  <a class="btn btn-primary btn-lg btn-block" href="/add_rt_template"> Add Router Template </a>
-  <hr>
-  <br>
-  <a class="btn btn-success btn-lg btn-block" href="/add_sw_template"> Add Switch Template </a>
+  <a type="button" class="btn btn-primary btn-lg btn-block" href="/add_isp_template"> Create Your Template </a>
   <hr>
 
+
+  <th> <p style="font-size:30px; color:#095b61; font-weight:bold;">History Record</p></th>
+  <br>
   <table class="table table-striped">
   <tr>
     <!-- <th>ID</th> -->

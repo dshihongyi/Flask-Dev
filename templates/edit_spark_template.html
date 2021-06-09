@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<style type="text/css">
+  .mainsection {white-space: wrap;}
+  .box {
+      min-height: 500px;
+      border: 1px solid #a0b3d6;
+      width: 1110px;
+      font-size: 14px;
+      max-height: 600px;
+      overflow-y: auto;
+      white-space: wrap;
+  }
+</style>
+
+  <!-- <style type="text/css">
+    .mainsection {white-space: wrap;}
+    .box {
+        min-height: 1000px;
+        border: 1px solid #a0b3d6;
+        width: 1300px;
+        font-size: 14px;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: wrap;
+    }
+  </style> -->
+  <h1><br>Spark Template: <small> <span STYLE="font-size:25px" style="color:rgb(109, 107, 105);"> Changed by {{isp_template.last_editor}} on {{isp_template.create_date}} </span></small> <h1>
+  <!-- <small>- Changed by {{isp_template.last_editor}} on {{isp_template.create_date}}</small> -->
+  {% from "includes/_formhelper.html" import render_field %}
+  <form method="POST" action="">
+  <hr>
+  <tr>
+    <th><small>Model: {{isp_template.model}}</small></th>
+  </tr>
+  <!-- <div class="mainsection">
+    <textarea id="XXX" style="font-size: 10pt" style="overflow-x:hidden; overflow-y:auto; background:transparent; border:0; width:120%" cols="135" rows="35" resize: none;>
+    {{ isp_template.config | safe }}
+    </textarea>
+  </div> -->
+  <div class="form-group">
+    {{render_field(form.config, class="box")}}
+  </div>
+
+    <div>
+      <input type="submit" class="btn btn-success" value="Update">
+    </div>
+  </div>
+{% endblock %}
