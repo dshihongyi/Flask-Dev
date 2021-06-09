@@ -190,10 +190,6 @@ def edit_spark_template():
 
 
 
-
-
-
-
 #### Register Form Class ####
 #### https://flask.palletsprojects.com/en/1.1.x/patterns/wtforms/
 class RegisterForm(Form):
