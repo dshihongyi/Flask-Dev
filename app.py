@@ -123,7 +123,7 @@ def edit_feenix_template():
             # Create Cursor
             cur = mysql.connection.cursor()
 
-            if session['username'] == 'admin':
+            if session['username'] == 'Admin' or "admin":
 
                 # Execute
                 cur.execute("UPDATE isp_templates SET config=%s, last_editor=%s WHERE isp = %s", (config, session['username'], ["Feenix"]))
