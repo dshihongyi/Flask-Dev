@@ -13,25 +13,26 @@
   <table class="table table-striped">
   <tr>
     <!-- <th>ID</th> -->
-    <th>Agency</th>
-    <th>Site Code</th>
+    <th>ID</th>
+    <th>Provider</th>
     <th>Device Model</th>
+    <th>Site Code</th>
     <th>Device Name</th>
     <th>Date</th>
     <th></th>
     <th></th>
   </tr>
-  {% for switch in sw_templates %}
+  {% for item in isp_templates %}
     <tr>
-      <!-- <td>{{switch.id}}</td> -->
-      <td>{{switch.agency}}</td>
-      <td>{{switch.site}}</td>
-      <td>{{switch.model}}</td>
-      <td>{{switch.ci_name}}</td>
-      <td>{{switch.create_date}}</td>
-      <td><a href="edit_sw_template/{{switch.id}}", class="btn btn-info pullright">Edit</a></td>
+      <td>{{item.id}}</td>
+      <td>{{item.isp}}</td>
+      <td>{{item.model}}</td>
+      <td>{{item.site}}</td>
+      <td>{{item.ci_name}}</td>
+      <td>{{item.create_date}}</td>
+      <td><a href="edit_isp_template/{{item.id}}", class="btn btn-info pullright">Edit</a></td>
       <td>
-        <form action="{{url_for('delete_switch', id=switch.id)}}", method="POST">
+        <form action="{{url_for('delete_switch', id=item.id)}}", method="POST">
           <input type="hidden" name="_method" value="DELETE">
           <input type="submit" value="Delete" class="btn btn-danger">
           <!-- <a href="delete.php" onclick="return confirm('Are you sure you want to delete this item?');">delete</a> -->

@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<style type="text/css">
+  .mainsection {white-space: wrap;}
+  .box {
+      min-height: 500px;
+      border: 1px solid #a0b3d6;
+      width: 1110px;
+      font-size: 14px;
+      max-height: 600px;
+      overflow-y: auto;
+      white-space: wrap;
+  }
+</style>
+
+  <h1><br> Add Default Configure Template</h1>
+  {% from "includes/_formhelper.html" import render_field %}
+  <form method="POST" action="">
+    <div class="form-group">
+      <label for="id">ID</label>
+      <select type="text" class="form-control" name="id" value={{request.form.id}}>
+        <option> </option>
+        <option>1</option>
+        <option>2</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="isp">ISP</label>
+      <select type="text" class="form-control" name="isp" value={{request.form.isp}}>
+        <option>      </option>
+        <option>Feenix</option>
+        <option>Spark</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Type</label>
+      <select type="text" class="form-control" name="type" value={{request.form.type}}>
+        <option>      </option>
+        <option>Router</option>
+        <option>Switch</option>
+      </select>
+    </div>
+    <div class="form-group">
+      {{render_field(form.model, class="form-control")}}
+    </div>
+      <div class="form-group">
+      {{render_field(form.site, class="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.ci_name, class="form-control")}}
+    </div>
+    <!-- <div class="form-group">
+      {{render_field(form.config, class="form-control")}}
+    </div> -->
+    <div class="form-group">
+      {{render_field(form.config, class="box")}}
+    </div>
+    <p><input type="submit" class="btn btn-success" value="Submit">  <input class="btn btn-secondary" type="reset" value="Reset"></p>
+    <!-- <p><input class="btn btn-primary" type="button" value="Input"></p> -->
+{% endblock %}

@@ -7,6 +7,7 @@ from functools import wraps
 import sys
 import pyperclip
 from copypaste import copy, paste
+from wtforms.fields.core import Field
 
 
 app = Flask(__name__)
@@ -77,6 +78,7 @@ def configure_template():
     return render_template('configure_template.html')
 
 
+
 # Templates Form Class
 class TemplateForm(Form):
     # brand = StringField('Brand', [validators.Length(min=1, max=50)])
@@ -104,41 +106,48 @@ def edit_feenix_template():
     # Get Switch templates
     result = cur.execute("SELECT * FROM isp_templates WHERE isp = %s", ["Feenix"])
 
-    isp_template = cur.fetchone()
+    if result > 0:
 
-    # Get from
-    form = TemplateForm(request.form)
+        isp_template = cur.fetchone()
 
-    # Populate template form Fields
-    form.config.data = isp_template['config']
+        # Get from
+        form = TemplateForm(request.form)
 
-    if request.method == 'POST':
-        
-        config = request.form['config']
+        # Populate template form Fields
+        form.config.data = isp_template['config']
 
-        # Create Cursor
-        cur = mysql.connection.cursor()
+        if request.method == 'POST':
+            
+            config = request.form['config']
 
-        if session['username'] == 'admin':
+            # Create Cursor
+            cur = mysql.connection.cursor()
 
-            # Execute
-            cur.execute("UPDATE isp_templates SET config=%s, last_editor=%s WHERE isp = %s", (config, session['username'], ["Feenix"]))
+            if session['username'] == 'admin':
 
-            # Commit to # DEBUG:
-            mysql.connection.commit()
+                # Execute
+                cur.execute("UPDATE isp_templates SET config=%s, last_editor=%s WHERE isp = %s", (config, session['username'], ["Feenix"]))
 
-            # Close connection
-            cur.close()
+                # Commit to # DEBUG:
+                mysql.connection.commit()
 
-            flash('Feenix Template Updated','success')
+                # Close connection
+                cur.close()
 
-            return redirect(url_for('dashboard'))
-        
-        else:
-            flash('Unauthorized, Please login "Admin" User For Update Template', 'danger')
-            return redirect(url_for('login'))
+                flash('Feenix Template Updated','success')
 
-    return render_template('edit_feenix_template.html', isp_template=isp_template, form=form)
+                return redirect(url_for('dashboard'))
+            
+            else:
+                flash('Unauthorized, Please login "Admin" User For Update Template', 'danger')
+                return redirect(url_for('login'))
+
+        return render_template('edit_feenix_template.html', isp_template=isp_template, form=form)
+    
+    else:
+        msg = """There are no Feenix Templates Found!! Let's Create a new one"""
+        return redirect(url_for('add_default_isp_template', msg=msg))
+
 
 
 # Configuration Template Page
@@ -151,41 +160,47 @@ def edit_spark_template():
     # Get Switch templates
     result = cur.execute("SELECT * FROM isp_templates WHERE isp = %s", ["Spark"])
 
-    isp_template = cur.fetchone()
+    if result > 0:
 
-    # Get from
-    form = TemplateForm(request.form)
+        isp_template = cur.fetchone()
 
-    # Populate template form Fields
-    form.config.data = isp_template['config']
+        # Get from
+        form = TemplateForm(request.form)
 
-    if request.method == 'POST':
-        
-        config = request.form['config']
+        # Populate template form Fields
+        form.config.data = isp_template['config']
 
-        # Create Cursor
-        cur = mysql.connection.cursor()
+        if request.method == 'POST':
+            
+            config = request.form['config']
 
-        if session['username'] == 'admin':
+            # Create Cursor
+            cur = mysql.connection.cursor()
 
-            # Execute
-            cur.execute("UPDATE isp_templates SET config=%s, last_editor=%s WHERE isp = %s", (config, session['username'], ["Spark"]))
+            if session['username'] == 'admin':
 
-            # Commit to # DEBUG:
-            mysql.connection.commit()
+                # Execute
+                cur.execute("UPDATE isp_templates SET config=%s, last_editor=%s WHERE isp = %s", (config, session['username'], ["Spark"]))
 
-            # Close connection
-            cur.close()
+                # Commit to # DEBUG:
+                mysql.connection.commit()
 
-            flash('Spark Template Updated','success')
+                # Close connection
+                cur.close()
 
-            return redirect(url_for('dashboard'))
-        
-        else:
-            flash('Unauthorized, Please login "Admin" User For Update Template', 'danger')
-            return redirect(url_for('login'))
+                flash('Spark Template Updated','success')
 
-    return render_template('edit_spark_template.html', isp_template=isp_template, form=form)
+                return redirect(url_for('dashboard'))
+            
+            else:
+                flash('Unauthorized, Please login "Admin" User For Update Template', 'danger')
+                return redirect(url_for('login'))
+
+        return render_template('edit_spark_template.html', isp_template=isp_template, form=form)
+
+    else:
+        msg = """There are no Spark Templates Found!! Let's Create a new one"""
+        return redirect(url_for('add_default_isp_template', msg=msg))
 
 
 
@@ -298,17 +313,60 @@ def dashboard():
     cur = mysql.connection.cursor()
 
     # Get Switch templates
-    result = cur.execute("SELECT * FROM sw_templates")
+    result = cur.execute("SELECT * FROM isp_templates")
 
-    sw_templates = cur.fetchall()
+    isp_templates = cur.fetchall()
     if result > 0:
-        return render_template('dashboard.html',sw_templates=sw_templates)
+        return render_template('dashboard.html',isp_templates=isp_templates)
     else:
         msg = "No Templates Found"
         return render_template('dashboard.html', msg=msg)
 
     # Close connection
     cur.close()
+
+
+# Default Templates Form Class
+class DefaultTemplateForm(Form):
+    id = Field('ID', [validators.Length(min=1, max=50)])
+    isp = StringField('ISP', [validators.Length(min=4, max=25)])
+    type = StringField('Type', [validators.Length(min=4, max=50)])
+    model = StringField('Model', [validators.Length(min=1, max=50)])
+    site = StringField('Site Code', [validators.Length(min=2, max=5)])
+    ci_name = StringField('CI_Name', [validators.Length(min=1, max=50)])
+    config = TextAreaField('Config', [validators.Length(min=0)])
+
+
+@app.route('/add_default_isp_template', methods=['GET','POST'])
+def add_default_isp_template():
+    form = DefaultTemplateForm(request.form)
+    if request.method == 'POST':
+        id = form.id.data
+        isp = form.isp.data
+        type = form.type.data
+        model = form.model.data
+        site = form.site.data
+        ci_name = form.ci_name.data
+        config = form.config.data
+
+        # Create Cursor
+        cur = mysql.connection.cursor()
+
+        # Execute
+        cur.execute("INSERT INTO isp_templates(id, isp, type, model, site, ci_name, config, last_editor) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)", (id, isp, type, model, site, ci_name, config, session['username']))
+
+
+        # Commit to # DEBUG:
+        mysql.connection.commit()
+
+        # Close connection
+        cur.close()
+
+        flash('Template Created','success')
+
+        return redirect(url_for('dashboard'))
+
+    return render_template('add_default_isp_template.html', form=form)
 
 
 
@@ -318,112 +376,115 @@ def dashboard():
 @is_logged_in
 def add_isp_template():
     form = TemplateForm(request.form)
-        
-    if request.method == 'POST' and form.validate() and form.isp.data == 'FEENIX':
-        # brand = request.form['brand']
-        # brand = form.brand.data
-        # type = form.type.data
-        # model = form.model.data
-        # ios = form.ios.data
-        # agency = form.agency.data
-        # site = form.site.data
-        # ci_name = form.ci_name.data
+
+
+    # Create Cursor
+    cur = mysql.connection.cursor()
+
+    # Get Switch templates
+    result = cur.execute("SELECT * FROM isp_templates")
+
+    isp_templates = cur.fetchall()
+    if result > 0:
+
+        if request.method == 'POST' and form.validate() and form.isp.data == 'FEENIX':
+ 
 
         # Create Cursor
-        cur = mysql.connection.cursor()
+            cur = mysql.connection.cursor()
 
         # Get user by id
-        result = cur.execute("SELECT * FROM isp_templates WHERE isp = %s", ["Feenix"])
+            result = cur.execute("SELECT * FROM isp_templates WHERE isp = %s", ["Feenix"])
 
-        if result > 0:
+            if result > 0:
 
-            # Fetch the Template data
-            template = cur.fetchone()
-            Feenix_Template = template['config']
-            # Feenix_Template = open("/home/daniel/Desktop/Web-Template/ISP_Template/Feenix.txt").read()
+                # Fetch the Template data
+                template = cur.fetchone()
+                Feenix_Template = template['config']
+                # Feenix_Template = open("/home/daniel/Desktop/Web-Template/ISP_Template/Feenix.txt").read()
 
 
-            # Modify the Value in Template
-            ide = form.ide.data
-            desc = form.desc.data
-            ip = form.ip.data
-            prefix = form.prefix.data
-            configs = form.config.data
+                # Modify the Value in Template
+                ide = form.ide.data
+                desc = form.desc.data
+                ip = form.ip.data
+                prefix = form.prefix.data
+                configs = form.config.data
 
-            Parsed_Feenix_Template = Feenix_Template.format(ide = ide, desc = desc, ip = ip, prefix = prefix)
-        
-            # # Commit to # DEBUG:
-            # mysql.connection.commit()
-
-            # # Close connection
-            # cur.close()
-
-            # return 'Successfully load value'
-            flash('Template Created','success')
-
-            return redirect(url_for('Create_feenix_template', result_data=Parsed_Feenix_Template))
-            # return render_template('add_isp_template.html', result=form.config.data)
-
-        else:
-            # app.logger.info('PASSWORD NOT MATCHED')
-            error = 'NO DEFAULT TEMPLATE > Navigate to Configure-Template Create New One'
-            return render_template('dashboard.html', error=error)
-            # Close Connection
-            cur.close()
+                Parsed_Feenix_Template = Feenix_Template.format(ide = ide, desc = desc, ip = ip, prefix = prefix)
             
+                # Commit to # DEBUG:
+                mysql.connection.commit()
 
-    elif request.method == 'POST' and form.validate() and form.isp.data == 'SPARK':
+                # Close connection
+                cur.close()
 
-         # Create Cursor
-        cur = mysql.connection.cursor()
+                # return 'Successfully load value'
+                flash('Template Created','success')
 
-        # Get user by id
-        result = cur.execute("SELECT * FROM isp_templates WHERE isp = %s", ["Spark"])
+                return redirect(url_for('Create_feenix_template', result_data=Parsed_Feenix_Template))
+                # return render_template('add_isp_template.html', result=form.config.data)
 
-        # Fetch the Template data
-        template = cur.fetchone()
-        Spark_Template = template['config']
-        # Spark_Template = open("/home/daniel/Desktop/Web-Template/ISP_Template/Spark.txt").read()
+            else:
+                # app.logger.info('PASSWORD NOT MATCHED')
+                error = 'NO DEFAULT FEENIX TEMPLATE > Navigate to Configure-Template Create New One'
+                return render_template('dashboard.html', error=error)
+                # Close Connection
+                cur.close()
+                
 
-        ide = form.ide.data
-        desc = form.desc.data
-        ip = form.ip.data
-        prefix = form.prefix.data
-        configs = form.config.data
+        elif request.method == 'POST' and form.validate() and form.isp.data == 'SPARK':
 
-        Parsed_Spark_Template = Spark_Template.format(ide = ide, desc = desc, ip = ip, prefix = prefix)
+            # Create Cursor
+            cur = mysql.connection.cursor()
+
+            # Get user by id
+            result = cur.execute("SELECT * FROM isp_templates WHERE isp = %s", ["Spark"])
+
+            if result > 0:
+
+                # Fetch the Template data
+                template = cur.fetchone()
+                Spark_Template = template['config']
+                # Spark_Template = open("/home/daniel/Desktop/Web-Template/ISP_Template/Spark.txt").read()
+
+                ide = form.ide.data
+                desc = form.desc.data
+                ip = form.ip.data
+                prefix = form.prefix.data
+                configs = form.config.data
+
+                Parsed_Spark_Template = Spark_Template.format(ide = ide, desc = desc, ip = ip, prefix = prefix)
+                
+                # Commit to # DEBUG:
+                mysql.connection.commit()
+
+                # Close connection
+                cur.close()
         
-        # Commit to # DEBUG:
-        mysql.connection.commit()
+                # return 'Successfully load value'
+                flash('Template Created','success')
 
-        # Close connection
-        cur.close()
-       
-        # return 'Successfully load value'
-        flash('Template Created','success')
+                return redirect(url_for('Create_spark_template', result_data=Parsed_Spark_Template))
+                # return render_template('add_sw_template.html', result=form.config.data)
+            
+            else:
+                # app.logger.info('PASSWORD NOT MATCHED')
+                error = 'NO DEFAULT SPARK TEMPLATE > Navigate to Configure-Template Create New One'
+                return render_template('dashboard.html', error=error)
+                # Close Connection
+                cur.close()
 
-        return redirect(url_for('Create_spark_template', result_data=Parsed_Spark_Template))
-        # return render_template('add_sw_template.html', result=form.config.data)
+        return render_template('add_isp_template.html', form=form)
 
+        
+    else:
+        msg = """There are no ISP Templates Found!! Let's Create a new one"""
+        return redirect(url_for('add_default_isp_template', msg=msg))
+        return render_template('add_default_isp_template.html', form=form, msg=msg)
 
-        # # Create Cursor
-        # cur = mysql.connection.cursor()
-
-        # # Execute
-        # cur.execute("INSERT INTO sw_templates(brand, type, model, IOS, agency, site, ci_name, config, last_editor) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)", (brand, type, model, ios, agency, site, ci_name, config, session['username']))
-
-
-        # # Commit to # DEBUG:
-        # mysql.connection.commit()
-
-        # # Close connection
-        # cur.close()
-
-        # flash('Template Created','success')
-
-        # return redirect(url_for('dashboard'))
-
-    return render_template('add_isp_template.html', form=form)
+        
+    
 
 @app.route('/Create_feenix_template', methods=['POST', 'GET'])
 def Create_feenix_template():
