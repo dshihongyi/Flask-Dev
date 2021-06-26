@@ -6,7 +6,6 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 import sys
 import pyperclip
-from copypaste import copy, paste
 from wtforms.fields.core import Field
 
 
