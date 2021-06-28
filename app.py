@@ -6,10 +6,14 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 import sys
 import pyperclip
+import logging
 from wtforms.fields.core import Field
 
 
 app = Flask(__name__)
+log = logging.getLogger('werkzeug')
+log.disabled = True
+app.logger.disabled = True
 
 #Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
